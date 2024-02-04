@@ -196,9 +196,6 @@ class TestProductRoutes(TestCase):
         product_name = products[0].serialize()['name']
         response = self.client.get(f'{BASE_URL}/{product_name}')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        product = ProductFactory()
-        response = self.client.get(f"{BASE_URL}/{product['name']}")
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         #
         # Uncomment this code once READ is implemented

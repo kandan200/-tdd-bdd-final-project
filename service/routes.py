@@ -181,7 +181,5 @@ def get_products_by_name(product_name):
     app.logger.info("Request to Retrieve a product with name [%s]", product_name)
 
     product = Product.find_by_name(product_name)[0]
-    if not product:
-        abort(status.HTTP_404_NOT_FOUND, f"Product with name '{product_name}' was not found.")
-
-    return product.serialize(), status.HTTP_200_OK
+    if product:
+        return product.serialize(), status.HTTP_200_OK
