@@ -155,7 +155,33 @@ def update_product(product_id):
 @app.route('/products/<int:product_id>', methods=['DELETE'])
 def delete_product(product_id):
     """deletes a product identified by product_id"""
-    product = Product.find()
+    product = Product.find(product_id)
+    if product:
+        product.delete()
+        return "", status.HTTP_204_NO_CONTENT
+
+@app.route('/products', methods=['GET'])
+def list_all_products():
+    """lists all products in the database"""
+    product_list = []
+    for product in Product.all():
+        product_list.append(product.serialize())
+    return {'data':product_list}, status.HTTP_200_OK
+
 #
 # PLACE YOUR CODE TO DELETE A PRODUCT HERE
 #
+@app.route('/products/<product_name>', methods=['GET'])
+def get_products_by_name(product_name):
+    """
+    Retrieve a single Product
+
+    This endpoint will return a Product based on it's id
+    """
+    app.logger.info("Request to Retrieve a product with name [%s]", product_name)
+
+    product = Product.find_by_name(product_name)[0]
+    if not product:
+        abort(status.HTTP_404_NOT_FOUND, f"Product with name '{product_name}' was not found.")
+
+    return product.serialize(), status.HTTP_200_OK

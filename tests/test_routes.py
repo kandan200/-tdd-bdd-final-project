@@ -170,8 +170,35 @@ class TestProductRoutes(TestCase):
 
         product_id = response.get_json()['id']
         delete = self.client.delete(f'{BASE_URL}/{product_id}')
-        self.assertEqual(delete.status_code, status.HTTP_200_OK)
+        self.assertEqual(delete.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(len(Product.all()), 0)
+
+    def test_list_all_products(self):
+        """ tests the list all products route """
+        products = self._create_products(10)
+        self.assertEqual(len(Product.all()), 10)
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        result = response.get_json()
+        self.assertEqual(len(result['data']), 10)
+        product_id = products[0].serialize()['id']
+        delete = self.client.delete(f'{BASE_URL}/{product_id}')
+        self.assertEqual(delete.status_code, status.HTTP_204_NO_CONTENT)
+        response = self.client.get(BASE_URL)
+        result = response.get_json()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(result['data']), 9)
+        
+    def test_list_by_name(self):
+        """tests the list by name route"""
+        products = self._create_products(10)
+        self.assertEqual(len(Product.all()), 10)
+        product_name = products[0].serialize()['name']
+        response = self.client.get(f'{BASE_URL}/{product_name}')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        product = ProductFactory()
+        response = self.client.get(f"{BASE_URL}/{product['name']}")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         #
         # Uncomment this code once READ is implemented
