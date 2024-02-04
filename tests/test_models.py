@@ -170,24 +170,17 @@ class TestProductModel(unittest.TestCase):
         products = Product.all()
         self.assertEqual(len(products), 5)
 
-    def test_find_a_product_by_name(self):
-        """it should find an existing product by its name"""
-        app.logger.info("Creating 5 test products")
-        for i in range(5):
-            product = ProductFactory()
+    def test_find_by_name(self):
+        """It should Find a Product by Name"""
+        products = ProductFactory.create_batch(5)
+        for product in products:
             product.create()
-        products = Product.all()
-        self.assertEqual(len(products), 5)
-        products = Product.all()
-        product = products[0]
-        counter = 0
-        for item in products:
-            if item.name == product.name:
-                counter =+1
-        search = Product.find_by_name(product.name)
-        self.assertEqual(search.count(), counter)
-        for item in search:
-            self.assertEqual(item.name, product.name)
+        name = products[0].name
+        count = len([product for product in products if product.name == name])
+        found = Product.find_by_name(name)
+        self.assertEqual(found.count(), count)
+        for product in found:
+            self.assertEqual(product.name, name)
 
     def test_find_a_product_by_availability(self):
         """it should find an existing product by its availability"""
